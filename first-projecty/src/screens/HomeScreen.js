@@ -23,6 +23,33 @@ const HomeScreen = ({ navigation }) => {
           navigation.navigate("ImageScreen");
         }}
       ></Button>
+
+      <Button
+        title="Go to Current Count"
+        onPress={() => {
+          navigation.navigate("CurrentCount");
+        }}
+      ></Button>
+
+      <Button
+        title="Go to Color "
+        onPress={() => {
+          navigation.navigate("ColorScreen");
+        }}
+      ></Button>
+
+      <Button
+        title="Go to Square Screen"
+        onPress={() => {
+          navigation.navigate("SquareScreen");
+        }}
+      ></Button>
+      <Button
+        title="Go to Text Screen"
+        onPress={() => {
+          navigation.navigate("TextScreen");
+        }}
+      ></Button>
     </View>
   );
 };

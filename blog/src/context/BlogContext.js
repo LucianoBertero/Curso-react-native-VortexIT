@@ -53,6 +53,8 @@ const deleteBlogPost = (dispatch) => {
 const getBlogPosts = (dispatch) => {
   return async () => {
     const response = await jsonServer.get("/blogposts");
+    console.log(response, "asdasdas");
+    console.log("hasta aca");
 
     dispatch({ type: "get_blogposts", payload: response.data });
   };

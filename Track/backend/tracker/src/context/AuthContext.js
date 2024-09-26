@@ -1,47 +1,68 @@
 import createDataContext from "./createDataContext";
 import trackerApi from "../api/tracker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const authReducer = (state, action) => {
   switch (action.type) {
-    case "signup":
-      return { ...state, isSignedIn: true };
-
     case "add_error":
       return { ...state, errorMessage: action.payload };
-
+    case "signup":
+      return { errorMessage: "", token: action.payload };
+    case "signin":
+      return { errorMessage: "", token: action.payload };
     default:
       return state;
   }
 };
 
-const signup = (dispatch) => {
-  return async ({ email, password }) => {
-    console.log("Intentando registrarse con:", email, password);
+const signup =
+  (dispatch) =>
+  async ({ email, password }, callback) => {
+    console.log("entro a sign up ");
+
     try {
-      const response = await trackerApi.post(`signup`, {
-        email: email,
-        password: password,
-      });
-      console.log("Respuesta del servidor:", response.data);
+      const response = await trackerApi.post("signup", { email, password });
+
+      await AsyncStorage.setItem("token", response.data.token);
+
+      dispatch({ type: "signup", payload: response.data.token });
+
+      if (callback) {
+        callback();
+      }
     } catch (error) {
-      console.error(
-        "Error en el registro:",
-        error.response ? error.response.data : error.message
-      );
+      console.log(error);
       dispatch({
         type: "add_error",
         payload: "Something went wrong with sign up",
       });
     }
   };
-};
 
-const signout = (dispatch) => {
-  return () => {};
-};
+const signin =
+  (dispatch) =>
+  async ({ email, password }, callback) => {
+    console.log("entro a sign in ");
+    try {
+      const response = await trackerApi.post("signin", { email, password });
+      await AsyncStorage.setItem("token", response.data.token);
+
+      dispatch({ type: "signin", payload: response.data.token });
+
+      if (callback) {
+        callback();
+      }
+    } catch (err) {
+      console.log(err);
+      dispatch({
+        type: "add_error",
+        payload: "Something went wrong with sign in",
+      });
+    }
+  };
 
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signup, signout },
-  { isSignedIn: false }
+  { signup, signin },
+  { isSignedIn: false, errorMessage: "" }
 );

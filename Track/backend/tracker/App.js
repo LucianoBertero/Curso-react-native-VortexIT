@@ -65,10 +65,9 @@ export default () => {
   );
 };
 
-// Estilos para SafeAreaView
 const styles = StyleSheet.create({
   safeArea: {
-    flex: 1, // Para ocupar toda la pantalla
-    backgroundColor: "white", // Cambiar si es necesario
+    flex: 1,
+    backgroundColor: "white",
   },
 });

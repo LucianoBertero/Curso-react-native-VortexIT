@@ -1,12 +1,24 @@
-import React, { useContext } from "react";
-import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native";
+import React, { useContext, useCallback, useEffect } from "react";
+import { View, StyleSheet } from "react-native";
 import AuthForm from "../components/AuthForm";
-
+import { useFocusEffect } from "@react-navigation/native";
 import { Context as AuthContext } from "../context/AuthContext";
 import NavLink from "../components/NavLinks";
 
 const SignupScreen = ({ navigation }) => {
-  const { state, signup } = useContext(AuthContext);
+  const { state, signup, clearErrorMessage, tryLocalSignin } =
+    useContext(AuthContext);
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        clearErrorMessage();
+      };
+    }, [])
+  );
+
+  useEffect(() => {
+    tryLocalSignin(navigation);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -14,7 +26,11 @@ const SignupScreen = ({ navigation }) => {
         headerText="Sign up for tracker"
         errorMessage={state.errorMessage}
         submitButtonText="Sign up"
-        onSubmit={signup} // Solo debería llamar a `signup`
+        onSubmit={(credentials) =>
+          signup(credentials, () => {
+            navigation.navigate("MainFlow");
+          })
+        }
       />
 
       <NavLink

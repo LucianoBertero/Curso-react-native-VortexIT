@@ -1,6 +1,7 @@
 import createDataContext from "./createDataContext";
 import trackerApi from "../api/tracker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -10,8 +11,22 @@ const authReducer = (state, action) => {
       return { errorMessage: "", token: action.payload };
     case "signin":
       return { errorMessage: "", token: action.payload };
+    case "clear_error_message":
+      return { ...state, errorMessage: "" };
+    case "signout":
+      return { token: null, errorMessage: "" };
     default:
       return state;
+  }
+};
+
+const tryLocalSignin = (dispatch) => async (navigation) => {
+  const token = await AsyncStorage.getItem("token");
+  if (token) {
+    dispatch({ type: "signin", payload: token });
+    navigation.navigate("MainFlow"); // Usa navigation.navigate aquí
+  } else {
+    navigation.navigate("Signin"); // Dirige a Signin si no hay token
   }
 };
 
@@ -42,13 +57,10 @@ const signup =
 const signin =
   (dispatch) =>
   async ({ email, password }, callback) => {
-    console.log("entro a sign in ");
     try {
       const response = await trackerApi.post("signin", { email, password });
       await AsyncStorage.setItem("token", response.data.token);
-
       dispatch({ type: "signin", payload: response.data.token });
-
       if (callback) {
         callback();
       }
@@ -61,8 +73,17 @@ const signin =
     }
   };
 
+const signout = (dispatch) => async (navigation) => {
+  await AsyncStorage.removeItem("token");
+  dispatch({ type: "signout" });
+  navigation.navigate("Signin");
+};
+const clearErrorMessage = (dispatch) => () => {
+  dispatch({ type: "clear_error_message" });
+};
+
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signup, signin },
-  { isSignedIn: false, errorMessage: "" }
+  { signup, signin, clearErrorMessage, tryLocalSignin, signout },
+  { token: null, errorMessage: "" }
 );

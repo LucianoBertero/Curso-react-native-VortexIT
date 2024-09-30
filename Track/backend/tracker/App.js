@@ -11,6 +11,7 @@ import TrackCreateScreen from "./src/screens/TrackCreateScreen";
 import TrackDetailScreen from "./src/screens/TrackDetailScreen";
 import TrackerListScreen from "./src/screens/TrackerListScreen";
 import { Provider as AuthProvider } from "./src/context/AuthContext";
+import { Provider as LocationProvider } from "./src/context/LocationContext";
 
 // Definición de los stacks y tabs
 const Stack = createNativeStackNavigator();
@@ -34,7 +35,11 @@ const MainFlow = () => {
         component={TrackListFlow}
         options={{ headerShown: false }}
       />
-      <Tab.Screen name="TrackCreate" component={TrackCreateScreen} />
+      <Tab.Screen
+        name="TrackCreate"
+        component={TrackCreateScreen}
+        options={{ headerShown: false }}
+      />
       <Tab.Screen name="Account" component={AccountScreen} />
     </Tab.Navigator>
   );
@@ -69,9 +74,11 @@ const App = () => {
 
 export default () => {
   return (
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <LocationProvider>
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </LocationProvider>
   );
 };
 

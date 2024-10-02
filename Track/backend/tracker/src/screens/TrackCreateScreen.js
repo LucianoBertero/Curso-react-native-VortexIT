@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Map from "../components/Map";
@@ -9,14 +9,17 @@ import TrackForm from "../components/TrackForm";
 
 const TrackerCreateScreen = () => {
   const {
-    state: { recording },
+    state: { recording, locations },
     addLocation,
   } = useContext(LocationContext);
   const isFocused = useIsFocused();
-  const [err] = useLocation(isFocused, (location) => {
-    addLocation(location, recording);
-  });
-
+  const callback = useCallback(
+    (location) => {
+      addLocation(location, recording);
+    },
+    [recording]
+  );
+  const [err] = useLocation(isFocused || recording, callback);
   useFocusEffect(
     React.useCallback(() => {
       console.log("Entering screen");

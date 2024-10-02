@@ -1,6 +1,6 @@
 import * as Location from "expo-location";
 
-const tenMetersWithDegrees = 0.0001;
+const tenMetersWithDegrees = 0.001;
 
 const getLocation = (increment) => {
   return {
@@ -17,12 +17,17 @@ const getLocation = (increment) => {
   };
 };
 
-let counter = 0;
+counter = 0;
+const watchId = Location._getCurrentWatchId();
+console.log("Watch ID:", watchId);
 
 setInterval(() => {
+  const location = getLocation(counter);
+  console.log("Emitting location:", location, "with watchId:", watchId);
+
   Location.EventEmitter.emit("Expo.locationChanged", {
-    watchId: Location._getCurrentWatchId(),
-    location: getLocation(counter),
+    watchId: watchId || "test-watch-id", // Asegura que watchId no sea undefined
+    location: location,
   });
   counter++;
-}, 1000);
+}, 100);

@@ -12,12 +12,11 @@ import TrackDetailScreen from "./src/screens/TrackDetailScreen";
 import TrackerListScreen from "./src/screens/TrackerListScreen";
 import { Provider as AuthProvider } from "./src/context/AuthContext";
 import { Provider as LocationProvider } from "./src/context/LocationContext";
+import { Provider as TrackProvider } from "./src/context/TrackContext";
 
-// Definición de los stacks y tabs
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Función para el flujo de TrackList con navegación en Stack
 function TrackListFlow() {
   return (
     <Stack.Navigator>
@@ -74,11 +73,13 @@ const App = () => {
 
 export default () => {
   return (
-    <LocationProvider>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </LocationProvider>
+    <TrackProvider>
+      <LocationProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </LocationProvider>
+    </TrackProvider>
   );
 };
 
